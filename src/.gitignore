@@ -1,0 +1,5 @@
+local.pri
+Makefile
+obj
+rcc
+moc_*
