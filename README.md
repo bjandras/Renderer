@@ -19,9 +19,7 @@ Copying
 Objavi Renderer is free software, distributed under the version 3 of the
 GNU Affero General Public License.  The text of the GNU Affero General Public
 License is available in the LICENSE.txt file inside the source tree and also
-online at:
-
-  http://www.gnu.org/licenses/agpl-3.0.html
+online at http://www.gnu.org/licenses/agpl-3.0.html
 
 
 Compiling
@@ -34,7 +32,7 @@ yourself from source. For this task you also need version 5 of the Qt framework.
 Get the sources from WebKit's SVN repository (I recommend that you use
 the chromium/1271 branch of WebKit):
 
-  svn checkout https://svn.webkit.org/repository/webkit/branches/chromium/1271 WebKit
+    svn checkout https://svn.webkit.org/repository/webkit/branches/chromium/1271 WebKit
 
 This will check out the sources in the WebKit directory inside the working
 directory.  From there on follow the build instructions for the Qt port of
@@ -43,12 +41,12 @@ WebKit (QtQebKit) which are available on http://trac.webkit.org/wiki/QtWebKit.
 For example, if Qt5 is installed in /opt/qt5, the command to build WebKit would
 look somewhat like this:
 
-  WEBKITOUTPUTDIR=$PWD/WebKit-build WebKit/Tools/Scripts/build-webkit --qt --qmake=/opt/qt5/bin/qmake --no-video --no-webkit2 --no-webgl --release
+    WEBKITOUTPUTDIR=$PWD/WebKit-build WebKit/Tools/Scripts/build-webkit --qt --qmake=/opt/qt5/bin/qmake --no-video --no-webkit2 --no-webgl --release
 
 To compile the Renderer go to Renderer/src directory and issue the following command:
 
-  QMAKEPATH=<WebKit-source>/Tools/qmake/ /opt/qt5/bin/qmake WEBKIT_DIR=<WebKit-build>
+    QMAKEPATH=WebKit-source/Tools/qmake/ /opt/qt5/bin/qmake WEBKIT_DIR=WebKit-build
 
-substituting <WebKit-source> with the full path to the WebKit source (where you checked
-out the WebKit repository) and <WebKit-build> with the full path to the WebKit build
-directory.
+substituting WebKit-source with the full path to the WebKit source (where you
+checked out the WebKit repository) and WebKit-build with the full path to the
+WebKit build directory.
