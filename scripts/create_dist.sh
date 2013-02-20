@@ -18,16 +18,28 @@ mkdir --parents $destdir/$prefix || exit 1
 mkdir --parents $destdir/$prefix/bin
 mkdir --parents $destdir/$prefix/lib/renderer
 
-# webkit library file
-libwebkit=$(ldd $builddir/src/renderer | grep libQtWebKit | ldd src/renderer | grep libQtWebKit  | cut -f 3 -d ' ')
+target=$builddir/src/renderer
 
-# copy files
-#
-cp $libwebkit $destdir/$prefix/lib/renderer/
-cp $builddir/src/renderer $destdir/$prefix/bin/
+version=$($target -version | cut -f 3 -d ' ')
+arch=$($target -version | cut -f 4 -d ' ')
+
+cp $target $destdir/$prefix/bin/
 chmod a+x $destdir/$prefix/bin/renderer
 
-tar -C $destdir -cvf - $prefix | bzip2 -c - > renderer.tar.bz2
+# webkit library files
+#
+libs="libWebKit1 libQtWebKit libQtCore"
+for lib in $libs; do
+  src=$(ldd $builddir/src/renderer | grep $lib | cut -f 3 -d ' ')
+  if test -n "$src"; then
+    cp $src $destdir/$prefix/lib/renderer/
+  fi
+done
+
+output_file="renderer-${version}-${arch}.tar.bz2"
+tar -C $destdir -cvf - $prefix | bzip2 -c - > $output_file
 
 echo "Removing $destdir"
 rm -r $destdir
+
+echo "Created $output_file"

@@ -29,6 +29,8 @@
 #include <QTextStream>
 #include <QDebug>
 
+#include <iostream>
+
 
 namespace {
     
@@ -143,19 +145,36 @@ namespace Objavi {
     void Application::parseArguments(QStringList args)
     {
         QFileInfo program(args.at(0));
-        QString programName("Objavi PDF Renderer");
 
+        QString programName("renderer");
         if (program.exists())
             programName = program.baseName();
 
         if (args.contains("-h") || args.contains("-help") || args.contains("--help"))
         {
-            qDebug() << "Usage:" << programName.toLatin1().data()
-                     << "[-gui]"
-                     << "[-custom-css path]"
-                     << "[-output path]"
-                     << "URL";
+            std::cout
+                << "Usage: " << programName.toLatin1().data()
+                << " [-version]"
+                << " [-gui]"
+                << " [-custom-css path]"
+                << " [-output path]"
+                << " URL"
+                << std::endl;
 
+            appQuit(0);
+        }
+
+        if (args.contains("-version"))
+        {
+            std::cout
+                << applicationName().toLatin1().data()
+                << " " << applicationVersion().toLatin1().data()
+#if defined(Q_PROCESSOR_X86_32)
+                << " x86"
+#elif defined(Q_PROCESSOR_X86_64)
+                << " amd64"
+#endif
+                << std::endl;
             appQuit(0);
         }
 
