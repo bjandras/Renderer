@@ -20,15 +20,15 @@ mkdir --parents $destdir/$prefix/lib/renderer
 
 target=$builddir/src/renderer
 
-version=$($target -version | cut -f 3 -d ' ')
-arch=$($target -version | cut -f 4 -d ' ')
+version=$(xvfb-run $target -version | cut -f 3 -d ' ')
+arch=$(xvfb-run $target -version | cut -f 4 -d ' ')
 
 cp $target $destdir/$prefix/bin/
 chmod a+x $destdir/$prefix/bin/renderer
 
 # webkit library files
 #
-libs="libWebKit1 libQtWebKit libQtCore"
+libs="libWebKit1 libQtWebKit"
 for lib in $libs; do
   src=$(ldd $builddir/src/renderer | grep $lib | cut -f 3 -d ' ')
   if test -n "$src"; then
