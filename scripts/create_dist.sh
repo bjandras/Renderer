@@ -28,7 +28,7 @@ chmod a+x $destdir/$prefix/bin/renderer
 
 # webkit library files
 #
-libs="libWebKit1 libQtWebKit"
+libs="libWebKit1 libQtWebKit libWebCore libJavaScriptCore libWTF libANGLE"
 for lib in $libs; do
   src=$(ldd $builddir/src/renderer | grep $lib | cut -f 3 -d ' ')
   if test -n "$src"; then
