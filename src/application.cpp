@@ -21,6 +21,8 @@
 #include "renderer.hpp"
 #include "mainwindow.hpp"
 
+#include <QWebFrame>
+
 #include <QUrl>
 #include <QDir>
 #include <QFile>
@@ -117,6 +119,8 @@ namespace Objavi {
             m_window.reset(new MainWindow());
             m_window->load(urls[0]);
             m_window->show();
+
+            connect(m_window->page(), SIGNAL(printRequested(QWebFrame *)), this, SLOT(onPrintRequested(QWebFrame *)));
         }
         else
         {
@@ -131,8 +135,15 @@ namespace Objavi {
             m_renderer.reset(new Objavi::Renderer(qurl, m_rendererOptions));
             QObject::connect(m_renderer.data(), SIGNAL(finished(bool)), this, SLOT(onRendererFinished(bool)));
 
-            qDebug() << "rendering to: " << m_renderer->outputFilePath();
+            qDebug() << "rendering URL" << qurl.toString() << "to PDF file" << m_renderer->outputFilePath();
         }
+    }
+
+
+    void Application::onPrintRequested(QWebFrame * frame)
+    {
+        m_renderer.reset(new Objavi::Renderer(frame->baseUrl(), m_rendererOptions));
+        qDebug() << "rendering URL" << frame->baseUrl().toString() << "to PDF file" << m_renderer->outputFilePath();
     }
 
 
@@ -186,14 +197,14 @@ namespace Objavi {
         {
             QString path = takeOptionValue(&args, bookjsPathIndex);
 
-            QFileInfo fileinfo(path);
+            QDir dir(path);
 
-            if (! fileinfo.isDir())
+            if (! dir.exists())
             {
                 appQuit(1, QString("path does not point to a directory: %1").arg(path));
             }
 
-            m_rendererOptions.bookjsPath = fileinfo.absolutePath();
+            m_rendererOptions.bookjsPath = dir.absolutePath();
         }
 
         int cssPathIndex = args.indexOf("-custom-css");

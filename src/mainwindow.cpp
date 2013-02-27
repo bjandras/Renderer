@@ -68,7 +68,7 @@ namespace Objavi {
 
         setupUi();
 
-        connect(page(), SIGNAL(downloadRequested(QNetworkRequest const &)), this, SLOT(downloadRequested(QNetworkRequest const &)));
+        connect(page(), SIGNAL(downloadRequested(QNetworkRequest const &)), this, SLOT(onDownloadRequested(QNetworkRequest const &)));
     }
 
 
@@ -132,7 +132,7 @@ namespace Objavi {
         fileMenu->addAction(tr("Open Location..."), this, SLOT(openLocation()), QKeySequence(Qt::CTRL | Qt::Key_L));
         fileMenu->addAction("Close Window", this, SLOT(close()), QKeySequence::Close);
         fileMenu->addSeparator();
-        fileMenu->addAction(tr("Print..."), this, SLOT(print()), QKeySequence::Print);
+        fileMenu->addAction(tr("Print"), this, SLOT(print()), QKeySequence::Print);
         fileMenu->addSeparator();
         fileMenu->addAction("Quit", QApplication::instance(), SLOT(closeAllWindows()), QKeySequence(Qt::CTRL | Qt::Key_Q));
 
@@ -363,24 +363,7 @@ namespace Objavi {
 
     void MainWindow::print()
     {
-        QSizeF pageSize = Objavi::BookJS::getPageSize(page());
-
-        if (! pageSize.isValid())
-        {
-            qCritical() << "unable to obtain page size";
-            return;
-        }
-
-        QPrinter printer;
-
-        printer.setOutputFileName("printer.pdf");
-        printer.setOutputFormat(QPrinter::PdfFormat);
-
-        printer.setFullPage(true);
-        //printer.setResolution(96);
-        printer.setPaperSize(pageSize, QPrinter::DevicePixel);
-
-        page()->mainFrame()->print(&printer);
+        page()->mainFrame()->evaluateJavaScript("window.print();");
     }
 
 
@@ -443,14 +426,14 @@ namespace Objavi {
     }
 
 
-    void MainWindow::downloadRequested(QNetworkRequest const & request)
+    void MainWindow::onDownloadRequested(QNetworkRequest const & request)
     {
         QNetworkAccessManager * manager = new QNetworkAccessManager(this);
         QNetworkReply * reply = manager->get(request);
-        connect(reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
+        connect(reply, SIGNAL(finished()), this, SLOT(onDownloadFinished()));
     }
 
-    void MainWindow::downloadFinished()
+    void MainWindow::onDownloadFinished()
     {
         QNetworkReply * reply = static_cast<QNetworkReply*>(sender());
 

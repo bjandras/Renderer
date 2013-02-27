@@ -51,6 +51,7 @@ namespace Objavi {
         void appQuit(int exitCode, QString const & msg = QString()) __attribute__((noreturn));
 
     private Q_SLOTS:
+        void onPrintRequested(QWebFrame * frame);
         void onRendererFinished(bool success);
     };
     

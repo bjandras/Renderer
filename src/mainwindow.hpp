@@ -26,6 +26,7 @@
 
 class QWebPage;
 class QWebView;
+class QWebFrame;
 class QAction;
 class QNetworkRequest;
 
@@ -85,8 +86,8 @@ namespace Objavi {
 
         void selectElements();
 
-        void downloadRequested(QNetworkRequest const &);
-        void downloadFinished();
+        void onDownloadRequested(QNetworkRequest const &);
+        void onDownloadFinished();
 
         void installBookJS();
     };
