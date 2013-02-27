@@ -88,6 +88,7 @@ namespace Objavi {
 
         void onDownloadRequested(QNetworkRequest const &);
         void onDownloadFinished();
+        void onPrintRequested(QWebFrame * frame);
 
         void installBookJS();
     };

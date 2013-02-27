@@ -119,8 +119,6 @@ namespace Objavi {
             m_window.reset(new MainWindow());
             m_window->load(urls[0]);
             m_window->show();
-
-            connect(m_window->page(), SIGNAL(printRequested(QWebFrame *)), this, SLOT(onPrintRequested(QWebFrame *)));
         }
         else
         {
@@ -137,13 +135,6 @@ namespace Objavi {
 
             qDebug() << "rendering URL" << qurl.toString() << "to PDF file" << m_renderer->outputFilePath();
         }
-    }
-
-
-    void Application::onPrintRequested(QWebFrame * frame)
-    {
-        m_renderer.reset(new Objavi::Renderer(frame->baseUrl(), m_rendererOptions));
-        qDebug() << "rendering URL" << frame->baseUrl().toString() << "to PDF file" << m_renderer->outputFilePath();
     }
 
 

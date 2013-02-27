@@ -107,7 +107,7 @@ namespace Objavi {
 
         QSizeF paperSize = pageSize * 0.75 * paperDpi / screenDpi;
 
-        qDebug() << "printing" << pageSize << paperSize;
+        qDebug() << "print starting";
 
         QPrinter printer;
 
@@ -120,7 +120,7 @@ namespace Objavi {
 
         m_webPage->mainFrame()->print(&printer);
 
-        qDebug() << "printing finished";
+        qDebug() << "print finished";
         Q_EMIT finished(true);
     }
     

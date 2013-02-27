@@ -69,6 +69,7 @@ namespace Objavi {
         setupUi();
 
         connect(page(), SIGNAL(downloadRequested(QNetworkRequest const &)), this, SLOT(onDownloadRequested(QNetworkRequest const &)));
+        connect(page(), SIGNAL(printRequested(QWebFrame *)), this, SLOT(onPrintRequested(QWebFrame *)));
     }
 
 
@@ -363,7 +364,38 @@ namespace Objavi {
 
     void MainWindow::print()
     {
-        page()->mainFrame()->evaluateJavaScript("window.print();");
+        QString saveFilePath = QFileDialog::getSaveFileName(this, "Save PDF file as...");
+
+        if (saveFilePath.isEmpty())
+        {
+            return;
+        }
+
+        QSizeF pageSize = BookJS::getPageSize(page());
+
+        if (! pageSize.isValid())
+        {
+            QMessageBox::critical(this, "Print to PDF error", "Unable to obtain book page size.");
+            return;
+        }
+
+        int const screenDpi = 96;
+        int const paperDpi = 300;
+
+        QSizeF paperSize = pageSize * 0.75 * paperDpi / screenDpi;
+
+        QPrinter printer;
+
+        printer.setOutputFileName(saveFilePath);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+
+        printer.setFullPage(true);
+        printer.setResolution(paperDpi);
+        printer.setPaperSize(paperSize, QPrinter::DevicePixel);
+
+        page()->mainFrame()->print(&printer);
+
+        QMessageBox::information(this, "Print to PDF", "Printing finished");
     }
 
 
@@ -460,10 +492,29 @@ namespace Objavi {
     }
 
 
+    void MainWindow::onPrintRequested(QWebFrame * /*frame*/)
+    {
+        print();
+    }
+
+
     void MainWindow::installBookJS()
     {
-        Objavi::BookJS::install(page());
-        qDebug() << "BookJS page size: " << Objavi::BookJS::getPageSize(page());
+        QString bookjsPath = QFileDialog::getExistingDirectory(this, "Select directory containing BookJS");
+
+        if (bookjsPath.isEmpty())
+        {
+            return;
+        }
+        
+        try
+        {
+            BookJS::install(page(), bookjsPath);
+        }
+        catch (std::exception & e)
+        {
+            QMessageBox::critical(this, "Error installing BookJS", e.what());
+        }
     }
 
 }
