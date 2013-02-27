@@ -96,7 +96,9 @@ namespace Objavi { namespace BookJS {
 
             if (! file.open(QFile::ReadOnly))
             {
-                throw std::runtime_error("could not open file");
+                QString message = QString("could not open file %1").arg(path);
+
+                throw std::runtime_error(message.toStdString());
             }
 
             return QTextStream(&file).readAll();
@@ -173,7 +175,7 @@ namespace Objavi { namespace BookJS {
         
     }
         
-    void install(QWebPage * page, QString const & customCSS)
+    void install(QWebPage * page, QString bookjsPath, QString customCSS)
     {
         QWebElement document = page->mainFrame()->documentElement();
         QWebElement head = document.findFirst("head");
@@ -183,7 +185,12 @@ namespace Objavi { namespace BookJS {
             throw std::runtime_error("no document head");
         }
 
-        appendCSS(loadFile(":/bookjs/book.css"), head);
+        if (bookjsPath.isEmpty())
+        {
+            bookjsPath = ":/bookjs/";
+        }
+
+        appendCSS(loadFile(bookjsPath + "/book.css"), head);
 
         if (! customCSS.isEmpty())
         {
@@ -192,8 +199,8 @@ namespace Objavi { namespace BookJS {
 
         QString script;
 
-        script += loadFile(":/bookjs/book.js");
-        script += loadFile(":/bookjs/book-config.js");
+        script += loadFile(bookjsPath + "/book.js");
+        script += loadFile(bookjsPath + "/book-config.js");
         script += QString("pagination.frontmatterContents = '%1';").arg(makeFrontMatterContents(head));
         script += "pagination.applyBookLayout();";
 

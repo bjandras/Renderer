@@ -156,6 +156,7 @@ namespace Objavi {
                 << "Usage: " << programName.toLatin1().data()
                 << " [-version]"
                 << " [-gui]"
+                << " [-bookjs path]"
                 << " [-custom-css path]"
                 << " [-output path]"
                 << " URL"
@@ -179,6 +180,21 @@ namespace Objavi {
         }
 
         m_gui = args.contains("-gui");
+
+        int bookjsPathIndex = args.indexOf("-bookjs");
+        if (bookjsPathIndex != -1)
+        {
+            QString path = takeOptionValue(&args, bookjsPathIndex);
+
+            QFileInfo fileinfo(path);
+
+            if (! fileinfo.isDir())
+            {
+                appQuit(1, QString("path does not point to a directory: %1").arg(path));
+            }
+
+            m_rendererOptions.bookjsPath = fileinfo.absolutePath();
+        }
 
         int cssPathIndex = args.indexOf("-custom-css");
         if (cssPathIndex != -1)

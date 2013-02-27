@@ -36,6 +36,7 @@ namespace Objavi {
         struct Options
         {
             QString outputFilePath;
+            QString bookjsPath;
             QString customCSS;
         };
 

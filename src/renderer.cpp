@@ -68,7 +68,7 @@ namespace Objavi {
 
             try
             {
-                BookJS::install(m_webPage, m_options.customCSS);
+                BookJS::install(m_webPage, m_options.bookjsPath, m_options.customCSS);
             }
             catch (std::exception & e)
             {

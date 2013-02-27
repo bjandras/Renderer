@@ -33,7 +33,7 @@ namespace Objavi {
 
         QSizeF getPageSize(QWebPage const * page, QString className = QString("page"));
 
-        void install(QWebPage * page, QString const & customCSS = QString());
+        void install(QWebPage * page, QString bookjsPath = QString(), QString customCSS = QString());
 
     }
 
