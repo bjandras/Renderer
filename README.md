@@ -50,3 +50,25 @@ To compile the Renderer go to Renderer/src directory and issue the following com
 substituting WebKit-source with the full path to the WebKit source (where you
 checked out the WebKit repository) and WebKit-build with the full path to the
 WebKit build directory.
+
+
+Running
+=======
+
+The Renderer can be run in two modes: normal and the GUI mode.
+
+The GUI mode displays a window that looks and behaves just like a normal web
+browser would.  This mode is intended for BookJS developers to test how BookJS
+behaves inside the WebKit engine.  To do this you can select the
+"Install BookJS" button inside the Tools menu.
+You can also fire up the standard WebKit developer console and experiment.
+To start the Renderer in the GUI mode use the "-gui" command line option.
+
+The normal mode, also called the offline mode, is intended to convert web pages
+to PDFs from the command line.  To run the Renderer in this mode specify the
+URL of the web page you want to convert to PDF as the command line argument.
+Other command line options are:
+
+  * -bookjs -- specifies the location of the BookJS code to use for formatting the page
+  * -custom-css -- specifies the CSS text to append after all other CSS text
+  * -output -- specified the output file where the PDF should be written to

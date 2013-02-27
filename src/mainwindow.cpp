@@ -192,7 +192,7 @@ namespace Objavi {
         showInspectorAction->setCheckable(true);
         showInspectorAction->connect(inspector, SIGNAL(visibleChanged(bool)), SLOT(setChecked(bool)));
         toolsMenu->addSeparator();
-        toolsMenu->addAction("Install BookJS", this, SLOT(installBookJS()));
+        toolsMenu->addAction("Install BookJS...", this, SLOT(installBookJS()));
 
         // "find text" toolbar
         //

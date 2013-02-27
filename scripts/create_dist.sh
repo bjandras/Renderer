@@ -20,8 +20,9 @@ mkdir --parents $destdir/$prefix/lib/renderer
 
 target=$builddir/src/renderer
 
-version=$(xvfb-run $target -version | cut -f 3 -d ' ')
-arch=$(xvfb-run $target -version | cut -f 4 -d ' ')
+version_text=$(xvfb-run $target -version)
+version=$(echo $version_text | cut -f 3 -d ' ')
+arch=$(echo $version_text | cut -f 4 -d ' ')
 
 cp $target $destdir/$prefix/bin/
 chmod a+x $destdir/$prefix/bin/renderer

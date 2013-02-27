@@ -102,7 +102,7 @@ namespace Objavi {
     {
         setOrganizationName("Sourcefabric");
         setApplicationName("Objavi Renderer");
-        setApplicationVersion("0.1");
+        setApplicationVersion("0.2");
 
         initWebSettings();
         parseArguments(arguments());
