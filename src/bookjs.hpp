@@ -31,7 +31,7 @@ namespace Objavi {
 
     namespace BookJS {
 
-        QSizeF getPageSize(QWebPage const * page, QString className = QString("page"));
+        QSizeF getPageSize(QWebPage const * page, QString className = QString("pagination-page"));
 
         void install(QWebPage * page, QString bookjsPath = QString(), QString customCSS = QString());
 
