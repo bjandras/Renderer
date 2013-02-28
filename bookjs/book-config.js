@@ -1,14 +1,18 @@
-pagination.sectionStartMarker = '.objavi-subsection';
-pagination.sectionTitleMarker = '.objavi-subsection-heading';
-pagination.chapterStartMarker = 'h1';
-pagination.chapterTitleMarker = 'h1';
-pagination.autoStart          = true;
-pagination.alwaysEven         = true;
-pagination.enableReflow       = false;
-pagination.enableFrontmatter  = true;
+paginationConfig = {
+    'sectionStartMarker': '.objavi-subsection',
+    'sectionTitleMarker': '.objavi-subsection-heading',
+    'chapterStartMarker': 'h1',
+    'chapterTitleMarker': 'h1',
+    'flowElement': 'document.body',
+    'alwaysEven': true,
+    'divideContents': true,
+    'columns': 1,
+    'enableFrontmatter': true,
+    'bulkPagesToAdd': 50, 
+    'pagesToAddIncrementRatio': 1.4, 
+    'autoStart': true,
+}
 
-//pagination.frontmatterContents = '<div id="booktitle">Book title</div><div id="booksubtitle">Book subtitle</div><div id="bookeditors">ed. Editor 1, Editor II, Editor III</div><div class="pagebreak"></div><div id="copyrightpage">Copyright: You<br>License: CC</div><div class="pagebreak"></div>';
-
-document.body.addEventListener('layoutFlowFinished', function() {
+document.addEventListener('layoutFlowFinished', function() {
     window.print();
 });

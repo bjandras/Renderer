@@ -190,7 +190,7 @@ namespace Objavi { namespace BookJS {
             bookjsPath = ":/bookjs/";
         }
 
-        appendCSS(loadFile(bookjsPath + "/book.css"), head);
+        //appendCSS(loadFile(bookjsPath + "/book.css"), head);
 
         if (! customCSS.isEmpty())
         {
@@ -199,10 +199,10 @@ namespace Objavi { namespace BookJS {
 
         QString script;
 
-        script += loadFile(bookjsPath + "/book.js");
         script += loadFile(bookjsPath + "/book-config.js");
-        script += QString("pagination.frontmatterContents = '%1';").arg(makeFrontMatterContents(head));
-        script += "pagination.applyBookLayout();";
+        script += QString("paginationConfig.frontmatterContents = '%1';").arg(makeFrontMatterContents(head));
+        script += loadFile(bookjsPath + "/book.js");
+        script += "Pagination.applyBookLayout();";
 
         page->mainFrame()->evaluateJavaScript(script);
     }
