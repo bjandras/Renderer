@@ -18,8 +18,11 @@
  */
 #pragma once
 
-#include <QtCore/QSizeF>
-#include <QtCore/QString>
+#include <QVariant>
+#include <QString>
+#include <QList>
+#include <QPair>
+#include <QMap>
 
 
 QT_BEGIN_NAMESPACE
@@ -31,9 +34,25 @@ namespace Objavi {
 
     namespace BookJS {
 
+        class PaginationConfig
+        {
+        public:
+            typedef QMap<QString,QVariant> MapType;
+
+            static PaginationConfig parse(QString const & text);
+
+            PaginationConfig();
+            PaginationConfig(QList<QPair<QString,QVariant> > const & items);
+
+            MapType const & items() const { return m_map; }
+
+        private:
+            MapType m_map;
+        };
+
         QSizeF getPageSize(QWebPage const * page, QString className = QString("pagination-page"));
 
-        void install(QWebPage * page, QString bookjsPath = QString(), QString customCSS = QString());
+        void install(QWebPage * page, QString bookjsPath, PaginationConfig const & paginationConfig, QString customCSS = QString());
 
     }
 

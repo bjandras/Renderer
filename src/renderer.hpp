@@ -18,6 +18,8 @@
  */
 #pragma once
 
+#include "bookjs.hpp"
+
 #include <QObject>
 #include <QString>
 #include <QUrl>
@@ -38,6 +40,7 @@ namespace Objavi {
             QString outputFilePath;
             QString bookjsPath;
             QString customCSS;
+            BookJS::PaginationConfig paginationConfig;
         };
 
     public:
