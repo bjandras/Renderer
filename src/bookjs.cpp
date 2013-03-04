@@ -19,6 +19,7 @@
 
 #include "bookjs.hpp"
 
+#include <QDir>
 #include <QFile>
 #include <QString>
 #include <QVariant>
@@ -33,6 +34,78 @@
 
 
 namespace Objavi { namespace BookJS {
+
+    PaginationConfig::PaginationConfig()
+    {}
+
+    PaginationConfig::PaginationConfig(QList<QPair<QString,QVariant> > const & items)
+    {
+        typedef QPair<QString,QVariant> ItemType;
+
+        Q_FOREACH (ItemType const & item, items)
+        {
+            m_map[item.first] = item.second;
+        }
+    }
+
+
+    PaginationConfig PaginationConfig::parse(QString const & text)
+    {
+        typedef QPair<QString,QVariant> ItemType;
+
+        QList<ItemType> items;
+
+        Q_FOREACH (QString item, text.split(','))
+        {
+            QStringList pair = item.split(':');
+
+            if (pair.length() < 2) continue;
+
+            QString key = pair[0].trimmed();
+            QString val = pair[1].trimmed();
+
+            QVariant value;
+
+            if (key == "lengthUnit")
+            {
+                if (val == "'em'" || val == "\"em\"" ||
+                    val == "'cm'" || val == "\"cm\"" ||
+                    val == "'mm'" || val == "\"mm\"" ||
+                    val == "'in'" || val == "\"in\"" ||
+                    val == "'pt'" || val == "\"pt\"" ||
+                    val == "'pc'" || val == "\"pc\"" ||
+                    val == "'px'" || val == "\"px\"" ||
+                    val == "'ex'" || val == "\"ex\"" ||
+                    val == "'%'"  || val == "\"%\"")
+                {
+                    value = val;
+                }
+            }
+            else
+            {
+                bool ok = false;
+                double d = val.toDouble(&ok);
+
+                if (ok)
+                {
+                    value = d;
+                }
+            }
+
+            if (value.isValid())
+            {
+                items.append(ItemType(key, value));
+            }
+            else
+            {
+                QString msg = QString("invalid value for option %1: %2").arg(key).arg(val);
+                throw std::runtime_error(msg.toLatin1().data());
+            }
+        }
+
+        return PaginationConfig(items);
+    }
+
 
     namespace {
 
@@ -175,7 +248,7 @@ namespace Objavi { namespace BookJS {
         
     }
         
-    void install(QWebPage * page, QString bookjsPath, QString customCSS)
+    void install(QWebPage * page, QString bookjsPath, PaginationConfig const & paginationConfig, QString customCSS)
     {
         QWebElement document = page->mainFrame()->documentElement();
         QWebElement head = document.findFirst("head");
@@ -185,12 +258,16 @@ namespace Objavi { namespace BookJS {
             throw std::runtime_error("no document head");
         }
 
-        if (bookjsPath.isEmpty())
+        QDir bookjsDir = QDir::current();
+        if (! bookjsPath.isEmpty())
         {
-            bookjsPath = ":/bookjs/";
+            bookjsDir = QDir(bookjsPath);
         }
 
-        appendCSS(loadFile(bookjsPath + "/book.css"), head);
+        if (bookjsDir.exists() == false)
+        {
+            throw std::runtime_error("invalid BookJS path");
+        }
 
         if (! customCSS.isEmpty())
         {
@@ -199,10 +276,28 @@ namespace Objavi { namespace BookJS {
 
         QString script;
 
-        script += loadFile(bookjsPath + "/book.js");
-        script += loadFile(bookjsPath + "/book-config.js");
-        script += QString("pagination.frontmatterContents = '%1';").arg(makeFrontMatterContents(head));
-        script += "pagination.applyBookLayout();";
+        // preset pagination configuration
+        script += loadFile(bookjsDir.filePath("book-config.js"));
+
+        // user-specified pagination configuration
+        //
+        for (PaginationConfig::MapType::ConstIterator it = paginationConfig.items().begin();
+             it != paginationConfig.items().end(); ++it)
+        {
+            QString optionKey   = it.key();
+            QString optionValue = it.value().toString();
+
+            script += QString("paginationConfig.%1 = %2;\n").arg(optionKey).arg(optionValue);
+        }
+
+        // front matter configuration
+        script += QString("paginationConfig.frontmatterContents = '%1';\n").arg(makeFrontMatterContents(head));
+
+        // main BookJS script text
+        script += loadFile(bookjsDir.filePath("book.js"));
+
+        // apply
+        script += "Pagination.applyBookLayout();";
 
         page->mainFrame()->evaluateJavaScript(script);
     }

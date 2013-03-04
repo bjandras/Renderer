@@ -104,6 +104,10 @@ namespace Objavi {
         setApplicationName("Objavi Renderer");
         setApplicationVersion("0.2");
 
+        // default options
+        //
+        m_rendererOptions.bookjsPath = QString(":/bookjs/");
+
         initWebSettings();
         parseArguments(arguments());
 
@@ -161,6 +165,7 @@ namespace Objavi {
                 << " [-bookjs path]"
                 << " [-custom-css path]"
                 << " [-output path]"
+                << " [-page-config string]"
                 << " URL"
                 << std::endl;
 
@@ -212,15 +217,32 @@ namespace Objavi {
 
             if (! file.open(QFile::ReadOnly))
             {
-                appQuit(1, QString("cout not open file: %1").arg(path));
+                appQuit(1, QString("could not open file: %1").arg(path));
             }
 
             m_rendererOptions.customCSS = QTextStream(&file).readAll();
         }
 
+        int paginationConfigIndex = args.indexOf("-page-config");
+        if (paginationConfigIndex != -1)
+        {
+            QString paginationConfigText = takeOptionValue(&args, paginationConfigIndex);
+
+            try
+            {
+                m_rendererOptions.paginationConfig = BookJS::PaginationConfig::parse(paginationConfigText);
+            }
+            catch (std::exception const & e)
+            {
+                appQuit(1, QString("error parsing page-config: %1").arg(e.what()));
+            }
+        }
+
         int outputPathIndex = args.indexOf("-output");
         if (outputPathIndex != -1)
+        {
             m_rendererOptions.outputFilePath = takeOptionValue(&args, outputPathIndex);
+        }
 
         int lastArg = args.lastIndexOf(QRegExp("^-.*"));
         m_urls = (lastArg != -1) ? args.mid(++lastArg) : args.mid(1);

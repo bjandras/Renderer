@@ -509,7 +509,7 @@ namespace Objavi {
         
         try
         {
-            BookJS::install(page(), bookjsPath);
+            BookJS::install(page(), bookjsPath, BookJS::PaginationConfig());
         }
         catch (std::exception & e)
         {

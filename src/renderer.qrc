@@ -4,7 +4,6 @@
     </qresource>
     <qresource prefix="/bookjs">
         <file alias="book.js">../bookjs/book.js</file>
-        <file alias="book.css">../bookjs/book.css</file>
         <file alias="book-config.js">../bookjs/book-config.js</file>
     </qresource>
 </RCC>
