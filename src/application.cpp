@@ -269,12 +269,3 @@ namespace Objavi {
     }
 
 } // namespace Objavi
-
-
-
-int main(int argc, char ** argv)
-{
-    Objavi::Application app(argc, argv);
-
-    return app.exec();
-}

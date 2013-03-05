@@ -50,7 +50,8 @@ SOURCES += \
     webinspector.cpp \
     webpage.cpp \
     bookjs.cpp \
-    renderer.cpp
+    renderer.cpp \
+    main.cpp
 
 HEADERS += \
     application.hpp \
