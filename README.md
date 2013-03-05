@@ -72,3 +72,12 @@ Other command line options are:
   * -bookjs -- specifies the location of the BookJS code to use for formatting the page
   * -custom-css -- specifies the CSS text to append after all other CSS text
   * -output -- specified the output file where the PDF should be written to
+  * -page-config -- BookJS page configuration (see below)
+  * -print-timeout -- number of seconds to wait for the page to be ready for printing
+
+The BookJS page configuration is specified in the following form:
+
+    option1=value1,option2=value2,...
+
+where options are those of the BookJS configuration (see book.js documentation on OPTIONS),
+and values are JavaScript floating-point or string literals.

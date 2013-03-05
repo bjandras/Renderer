@@ -107,6 +107,7 @@ namespace Objavi {
         // default options
         //
         m_rendererOptions.bookjsPath = QString(":/bookjs/");
+        m_rendererOptions.printTimeout = 10000;
 
         initWebSettings();
         parseArguments(arguments());
@@ -166,6 +167,7 @@ namespace Objavi {
                 << " [-custom-css path]"
                 << " [-output path]"
                 << " [-page-config string]"
+                << " [-print-timeout seconds]"
                 << " URL"
                 << std::endl;
 
@@ -235,6 +237,24 @@ namespace Objavi {
             catch (std::exception const & e)
             {
                 appQuit(1, QString("error parsing page-config: %1").arg(e.what()));
+            }
+        }
+
+        int printTimeoutIndex = args.indexOf("-print-timeout");
+        if (printTimeoutIndex != -1)
+        {
+            QString printTimeoutText = takeOptionValue(&args, printTimeoutIndex);
+
+            bool ok;
+            int printTimeout = printTimeoutText.toInt(&ok);
+
+            if (ok == true)
+            {
+                m_rendererOptions.printTimeout = printTimeout * 1000; // to milli-seconds
+            }
+            else
+            {
+                appQuit(1, QString("invalid value for print-timeout: %1").arg(printTimeoutText));
             }
         }
 
