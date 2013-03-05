@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QTimer>
 #include <QUrl>
 
 #include <QWebPage>
@@ -41,10 +42,15 @@ namespace Objavi {
             QString bookjsPath;
             QString customCSS;
             BookJS::PaginationConfig paginationConfig;
+            quint32 printTimeout;
+
+            Options()
+            {
+                printTimeout = 10000;
+            }
         };
 
     public:
-        Renderer(QUrl const & url, QString const & outputFilePath = QString(), QObject * parent = NULL);
         Renderer(QUrl const & url, Options const & options, QObject * parent = NULL);
 
         QString outputFilePath() const { return m_options.outputFilePath; }
@@ -54,6 +60,7 @@ namespace Objavi {
 
     private:
         Options m_options;
+        QTimer m_printTimer;
         QWebPage * m_webPage;
 
         void start(QUrl const & url);
@@ -62,6 +69,7 @@ namespace Objavi {
     private Q_SLOTS:
         void webPageLoadFinished(bool ok);
         void webPagePrintRequested(QWebFrame * frame);
+        void printRequestTimeout();
     };
 
 }

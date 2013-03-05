@@ -28,17 +28,13 @@
 
 namespace Objavi {
 
-    Renderer::Renderer(QUrl const & url, QString const & outputFilePath, QObject * parent)
-        : QObject(parent)
-    {
-        m_options.outputFilePath = outputFilePath;
-        start(url);
-    }
-
     Renderer::Renderer(QUrl const & url, Options const & options, QObject * parent)
         : QObject(parent)
         , m_options(options)
     {
+        m_printTimer.setSingleShot(true);
+        connect(&m_printTimer, SIGNAL(timeout()), this, SLOT(printRequestTimeout()));
+
         start(url);
     }
 
@@ -75,6 +71,8 @@ namespace Objavi {
                 qCritical() << "ERROR:" << e.what();
                 Q_EMIT finished(false);
             }
+
+            m_printTimer.start(m_options.printTimeout);
         }
         else
         {
@@ -86,8 +84,23 @@ namespace Objavi {
 
     void Renderer::webPagePrintRequested(QWebFrame *)
     {
-        qDebug() << "web page print requested";
-        printPage();
+        if (m_printTimer.isActive())
+        {
+            m_printTimer.stop();
+            qDebug() << "web page print requested";
+            printPage();
+        }
+        else
+        {
+            qDebug() << "web page print request timed out";
+        }
+    }
+
+
+    void Renderer::printRequestTimeout()
+    {
+        qCritical() << "ERROR: print request timeout";
+        Q_EMIT finished(false);
     }
 
 
