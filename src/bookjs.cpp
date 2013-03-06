@@ -287,17 +287,20 @@ namespace Objavi { namespace BookJS {
             QString optionKey   = it.key();
             QString optionValue = it.value().toString();
 
-            script += QString("paginationConfig.%1 = %2;\n").arg(optionKey).arg(optionValue);
+            script += QString("\npaginationConfig.%1 = %2;").arg(optionKey).arg(optionValue);
         }
 
         // front matter configuration
-        script += QString("paginationConfig.frontmatterContents = '%1';\n").arg(makeFrontMatterContents(head));
+        //
+        QString frontmatterContents = makeFrontMatterContents(head);
+        frontmatterContents.replace("'", "\\'");
+        script += QString("\npaginationConfig.frontmatterContents = '%1';\n").arg(frontmatterContents);
 
         // main BookJS script text
         script += loadFile(bookjsDir.filePath("book.js"));
 
         // apply
-        script += "Pagination.applyBookLayout();";
+        script += "\nPagination.applyBookLayout();";
 
         page->mainFrame()->evaluateJavaScript(script);
     }
