@@ -50,6 +50,7 @@ SOURCES += \
     webinspector.cpp \
     webpage.cpp \
     bookjs.cpp \
+    jstext.cpp \
     renderer.cpp \
     main.cpp
 
@@ -61,6 +62,7 @@ HEADERS += \
     webinspector.hpp \
     webpage.hpp \
     bookjs.hpp \
+    jstext.hpp \
     renderer.hpp
 
 RESOURCES += \

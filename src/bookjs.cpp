@@ -18,6 +18,7 @@
  */
 
 #include "bookjs.hpp"
+#include "jstext.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -293,8 +294,7 @@ namespace Objavi { namespace BookJS {
         // front matter configuration
         //
         QString frontmatterContents = makeFrontMatterContents(head);
-        frontmatterContents.replace("'", "\\'");
-        script += QString("\npaginationConfig.frontmatterContents = '%1';\n").arg(frontmatterContents);
+        script += QString("\npaginationConfig.frontmatterContents = %1;\n").arg(JsText::format(frontmatterContents));
 
         // main BookJS script text
         script += loadFile(bookjsDir.filePath("book.js"));
