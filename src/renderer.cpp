@@ -19,6 +19,7 @@
 
 #include "renderer.hpp"
 #include "bookjs.hpp"
+#include "pdf.hpp"
 
 #include <QWebFrame>
 #include <QPrinter>
@@ -132,6 +133,8 @@ namespace Objavi {
         printer.setPaperSize(paperSize, QPrinter::DevicePixel);
 
         m_webPage->mainFrame()->print(&printer);
+
+        Pdf::addAnnotations(m_webPage, m_options.outputFilePath);
 
         qDebug() << "print finished";
         Q_EMIT finished(true);

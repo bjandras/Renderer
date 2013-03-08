@@ -36,10 +36,13 @@ load(features)
 
 
 INCLUDEPATH += \
+    /usr/local/include \
     $${WEBKIT_DIR}/include/QtWebKit \
     $${ROOT_WEBKIT_DIR}/Source/WTF
 
 LIBS *= -L$${WEBKIT_DIR}/lib
+
+LIBS += -lpoppler
 
 
 SOURCES += \
@@ -51,6 +54,7 @@ SOURCES += \
     webpage.cpp \
     bookjs.cpp \
     jstext.cpp \
+    pdf.cpp \
     renderer.cpp \
     main.cpp
 
@@ -63,6 +67,7 @@ HEADERS += \
     webpage.hpp \
     bookjs.hpp \
     jstext.hpp \
+    pdf.hpp \
     renderer.hpp
 
 RESOURCES += \
