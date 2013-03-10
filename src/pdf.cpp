@@ -24,6 +24,7 @@
 #include <poppler/Annot.h>
 #include <poppler/Page.h>
 #include <poppler/XRef.h>
+#include <poppler/Link.h>
 #include <poppler/goo/GooString.h>
 
 #include <QWebFrame>
@@ -41,53 +42,70 @@ namespace Objavi { namespace Pdf {
     typedef QScopedPointer<PDFDoc> PDFDocPtr;
 
 
-    void populateLinkAnnotationDict(Dict * dict, XRef * xref, QRect const & rect)
+    class LinkAnnotation : public AnnotLink
     {
-        Object tmp;
+    public:
+        LinkAnnotation(XRef * xref, PDFRectangle * rect, Catalog * catalog, char const * uri)
+            : AnnotLink(xref, rect, catalog)
+        {
+            Object actionObject;
+            actionObject.initDict(xref);
 
-        Object typeObject;
-        typeObject.initName("Annot");
+            GooString * uri_ = new GooString(uri);
 
-        Object subtypeObject;
-        subtypeObject.initName("Link");
+            Object tmp;
+            actionObject.dictSet((char*)"S", tmp.initName((char*)"URI"));
+            actionObject.dictSet((char*)"URI", tmp.initString(uri_));
 
-        Object rectObject;
-        rectObject.initArray(xref);
-        rectObject.arrayAdd(tmp.initReal(rect.bottom()));
-        rectObject.arrayAdd(tmp.initReal(rect.left()));
-        rectObject.arrayAdd(tmp.initReal(rect.top()));
-        rectObject.arrayAdd(tmp.initReal(rect.right()));
-        tmp.free();
-        
-        dict->set("Type", &typeObject);
-        dict->set("Sybtype", &subtypeObject);
-        dict->set("Rect", &rectObject);
+            action = LinkAction::parseAction(&actionObject, catalog->getBaseURI());
+
+            annotObj.dictSet((char*)"A", &actionObject);
+        }
+    };
+
+    AnnotLink * makeLinkAnnotation(PDFDoc & doc, QRect const & qrect, QString const & uri)
+    {
+        PDFRectangle * rect = new PDFRectangle(qrect.left(), qrect.top(), qrect.right(), qrect.bottom());
+        return new LinkAnnotation(doc.getXRef(), rect, doc.getCatalog(), uri.toLatin1().data());
     }
 
 
-    AnnotLink * makeLinkAnnotation(XRef * xref, Catalog * catalog, QRect const & rect)
+    void printRect(PDFRectangle * rect)
     {
-        Object * annotObject = new Object();
-        annotObject->initDict(xref);
-        xref->addIndirectObject(annotObject);
-
-        Dict * dict = annotObject->getDict();
-        populateLinkAnnotationDict(dict, xref, rect);
-        
-        AnnotLink * annot = new AnnotLink(xref, dict, catalog, annotObject);
-        return annot;
+        qDebug() << rect->x1 << rect->y1 << rect->x2 << rect->y2;
     }
 
 
-    void addAnnotation(QWebElement const & element, Page * pdfPage, XRef * xref, Catalog * catalog)
+    void addAnnotation(QWebElement const & element, PDFDoc & doc)
     {
-        QRect geom = element.geometry();
+        QString urlText = element.attribute("href");
+        QUrl url(urlText);
 
-        PDFRectangle * rect = new PDFRectangle(geom.left(), geom.top(), geom.right(), geom.bottom());
+        if (url.isRelative() || url.isLocalFile())
+        {
+            return;
+        }
 
-        Annot * annot = new AnnotLink(xref, rect, catalog);
+        QRect rect = element.geometry();
+        float pageSize = 796.0;
 
-        pdfPage->addAnnot(annot, catalog);
+        int y = rect.y();
+        int pageNum = y / pageSize;
+
+        y = y % (int)pageSize;
+        y = pageSize - y;
+        rect.setY(y);
+
+        qDebug() << rect << pageNum+1 << urlText;
+
+        AnnotLink * annot = makeLinkAnnotation(doc, rect, urlText);
+
+        Page * page = doc.getPage(pageNum+1);
+
+        if (page != NULL)
+        {
+            page->addAnnot(annot, doc.getCatalog());
+        }
     }
 
  
@@ -100,27 +118,14 @@ namespace Objavi { namespace Pdf {
 
         PDFDocPtr doc(new PDFDoc(inputPath.data()));
 
-        Catalog * catalog = doc->getCatalog();
-        XRef * xref = doc->getXRef();
-
-        qDebug() << doc->isOk() << doc->getNumPages();
-
         QWebElementCollection links = frame->findAllElements("a");
-
         Q_FOREACH (QWebElement const & element, links)
         {
-            addAnnotation(element, doc->getPage(1), xref, catalog);
+            addAnnotation(element, *doc);
         }
 
-        PDFRectangle * rect = new PDFRectangle(10, 10, 150, 150);
-#if 0
-        AnnotText * annot = new AnnotText(xref, rect, catalog);
-        annot->setLabel(new GooString("ASDFG"));
-#endif
-        //AnnotLink * annot = new AnnotLink(xref, rect, catalog);
-        AnnotLink * annot = makeLinkAnnotation(xref, catalog, QRect(10, 10, 150, 150));
-        qDebug() << annot->getAction();
-        doc->getPage(1)->addAnnot(annot, catalog);
+        AnnotLink * annot = makeLinkAnnotation(*doc, QRect(10, 10, 150, 150), "http://www.google.com");
+        doc->getPage(1)->addAnnot(annot, doc->getCatalog());
 
         doc->saveAs(outputPath.data(), writeStandard);
     }

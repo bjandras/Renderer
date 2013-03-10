@@ -42,7 +42,7 @@ INCLUDEPATH += \
 
 LIBS *= -L$${WEBKIT_DIR}/lib
 
-LIBS += -lpoppler
+LIBS += -L/usr/local/lib -lpoppler
 
 
 SOURCES += \
