@@ -25,31 +25,29 @@ online at http://www.gnu.org/licenses/agpl-3.0.html
 Compiling
 =========
 
-The BookJS library uses features inside WebKit which are currently available
-only in the development version of WebKit, so you'll need to compile WebKit
-yourself from source. For this task you also need version 5 of the Qt framework.
+To compile the Renderer the Qt5 SDK is needed.  For Ubuntu users this
+translates to having Qt5 development packages installed from the repository.
+Qt5 for Ubuntu is provided by the "Canonical Qt5 Edgers" team at:
 
-Get the sources from WebKit's SVN repository (I recommend that you use
-the chromium/1271 branch of WebKit):
+    https://launchpad.net/~canonical-qt5-edgers/+archive/qt5-proper
 
-    svn checkout https://svn.webkit.org/repository/webkit/branches/chromium/1271 WebKit
+Install the Qt5 packages by adding ppa:canonical-qt5-edgers/qt5-proper to the
+list of sources, then install the necessary packages, like this:
 
-This will check out the sources in the WebKit directory inside the working
-directory.  From there on follow the build instructions for the Qt port of
-WebKit (QtQebKit) which are available on http://trac.webkit.org/wiki/QtWebKit.
+    sudo add-apt-repository ppa:canonical-qt5-edgers/qt5-proper
+    sudo apt-get install qtbase5-dev libqt5webkit5-dev
+    sudo apt-get install qtdeclarative5-dev qtlocation5-dev qtsensors5-dev
 
-For example, if Qt5 is installed in /opt/qt5, the command to build WebKit would
-look somewhat like this:
+Some Qt5 developmet packages are missing some dependancies, so if you get link
+errors make sure you have the following packages installed as well:
 
-    WEBKITOUTPUTDIR=$PWD/WebKit-build WebKit/Tools/Scripts/build-webkit --qt --qmake=/opt/qt5/bin/qmake --no-video --no-webkit2 --no-webgl --release
+    sudo apt-get install libxml2-dev libxslt1-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
 
-To compile the Renderer go to Renderer/src directory and issue the following command:
+To compile the Renderer binary go to the source directory and issue the
+following commands:
 
-    QMAKEPATH=WebKit-source/Tools/qmake/ /opt/qt5/bin/qmake WEBKIT_DIR=WebKit-build
-
-substituting WebKit-source with the full path to the WebKit source (where you
-checked out the WebKit repository) and WebKit-build with the full path to the
-WebKit build directory.
+    QT_SELECT=qt5 qmake
+    make
 
 
 Running
