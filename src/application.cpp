@@ -97,7 +97,7 @@ namespace {
 namespace Objavi {
 
     Application::Application(int argc, char ** argv)
-        : QApplication(argc, argv, QApplication::GuiServer)
+        : QApplication(argc, argv)
         , m_gui(false)
     {
         setOrganizationName("Sourcefabric");

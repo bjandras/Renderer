@@ -2,4 +2,7 @@ local.pri
 Makefile
 obj
 rcc
+qrc_*
 moc_*
+*.o
+renderer
