@@ -30,9 +30,9 @@ namespace Objavi { namespace JsText {
 
        for (int i = 0; i < string.length(); ++i)
        {
-           char c = string[i].toLatin1();
+           QChar c = string[i];
 
-           switch (c)
+           switch (c.toLatin1())
            {
            case '\'':
                result.append("\\'");
