@@ -43,6 +43,7 @@ namespace Objavi {
         QScopedPointer<Renderer> m_renderer;
 
         Renderer::Options m_rendererOptions;
+        QStringList m_args;
         QStringList m_urls;
         bool m_gui;
 
@@ -51,6 +52,7 @@ namespace Objavi {
         void appQuit(int exitCode, QString const & msg = QString()) __attribute__((noreturn));
 
     private Q_SLOTS:
+        void start();
         void onRendererFinished(bool success);
     };
     

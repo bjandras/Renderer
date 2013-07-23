@@ -110,7 +110,17 @@ namespace Objavi {
         m_rendererOptions.printTimeout = 10000;
 
         initWebSettings();
-        parseArguments(arguments());
+
+        m_args = arguments();
+
+        // start the application when the exec loop starts
+        QTimer::singleShot(0, this, SLOT(start()));
+    }
+
+
+    void Application::start()
+    {
+        parseArguments(m_args);
 
         QStringList urls = m_urls;
 
